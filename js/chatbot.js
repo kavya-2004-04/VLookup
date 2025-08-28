@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
         try {
-                        const response = await fetch('/api/chat', { // Changed from 'http://localhost:5000/chat'
+                        const response = await fetch('https://chatbot-backend-p3od.onrender.com/chat', { // Changed from 'http://localhost:5000/chat'
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: message, context: currentContext }),
