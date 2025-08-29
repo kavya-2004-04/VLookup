@@ -1,6 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBiYs7FoNkZoCGISsbpUW_VTHJ3dLssheo",
+    authDomain: "vlookup-eb2ae.firebaseapp.com",
+    projectId: "vlookup-eb2ae",
+    storageBucket: "vlookup-eb2ae.appspot.com",
+    messagingSenderId: "41494813156",
+    appId: "1:41494813156:web:6b98657c5c1469769f4ff1",
+    measurementId: "G-1PBVX0QKRE"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  window.db = db;
+  window.fs = { collection, getDocs, addDoc, deleteDoc, doc };
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VLookUp Global Technologies</title>
@@ -270,7 +290,52 @@
     </footer>
 
     <script src="js/script.js"></script>
-    <script src="js/career.js"></script>
+    <!--<script src="js/career.js"></script>-->
+    <script type="module">
+  const { collection, getDocs } = window.fs;
+  const jobsContainer = document.querySelector(".jobs-container");
+  const noJobsMessage = document.getElementById("noJobsMessage");
+
+  async function loadCareerJobs() {
+    const snapshot = await getDocs(collection(window.db, "jobs"));
+    jobsContainer.innerHTML = "";
+    if (snapshot.empty) {
+      noJobsMessage.style.display = "block";
+      return;
+    }
+    noJobsMessage.style.display = "none";
+    snapshot.forEach(docSnap => {
+      const job = docSnap.data();
+      const jobCard = document.createElement("div");
+      jobCard.className = "job-card";
+      jobCard.innerHTML = `
+        <div class="job-header">
+          <h3>${job.title}</h3>
+          <span class="job-location">${job.location}</span>
+        </div>
+        <div class="job-details">
+          <p><strong>Experience:</strong> ${job.experience}</p>
+          <p>${job.job_description}</p>
+          <div class="job-skills">
+            ${job.skills.split(",").map(s => `<span>${s.trim()}</span>`).join("")}
+          </div>
+        </div>
+        <a href="#" class="apply-btn" data-job-title="${job.title}">Apply Now</a>`;
+      jobsContainer.appendChild(jobCard);
+    });
+
+    document.querySelectorAll(".apply-btn").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.preventDefault();
+        document.getElementById("jobTitle").value = btn.getAttribute("data-job-title");
+        document.getElementById("applicationModal").style.display = "block";
+      });
+    });
+  }
+
+  loadCareerJobs();
+</script>
+
     <script src="js/application_form.js"></script>
                 <script src="js/chatbot.js"></script>
 
